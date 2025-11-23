@@ -81,41 +81,74 @@ function loadQuestion() {
   const grid = document.createElement("div");
   grid.className = "grid";
 
-  const totalTiles = 36;
-  const gridSize = 6; // 6x6 grid
+  const gridSize = 6; 
   const tiles = [];
 
-for (let row = 0; row < gridSize; row++) {
-  for (let col = 0; col < gridSize; col++) {
-    const t = document.createElement("div");
-    t.className = "tile";
+  // --- CREATE PUZZLE TILES ---
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      const t = document.createElement("div");
+      t.className = "tile";
 
-    // set the background image
-    t.style.backgroundImage = `url(${q.img})`;
+      // show only a part of the image
+      t.style.backgroundImage = `url(${q.img})`;
+      t.style.backgroundSize = `${gridSize * 100}% ${gridSize * 100}%`;
+      t.style.backgroundPosition = `${(col / (gridSize - 1)) * 100}% ${(row / (gridSize - 1)) * 100}%`;
 
-    // scale the image to the full grid
-    t.style.backgroundSize = `${gridSize * 100}% ${gridSize * 100}%`;
+      // start hidden
+      t.style.opacity = 0;
+      t.style.transition = "opacity 0.3s ease";
 
-    // show the correct portion in this tile
-    t.style.backgroundPosition = `${(col / (gridSize - 1)) * 100}% ${(row / (gridSize - 1)) * 100}%`;
-
-    tiles.push(t);
-    grid.appendChild(t);
+      tiles.push(t);
+      grid.appendChild(t);
+    }
   }
-}
 
-  const revealSpeed = 400; // Millisekunden zwischen Kacheln
+  area.appendChild(grid);
+
+  // --- REVEAL TILES GRADUALLY ---
+  const revealSpeed = 400;
   const revealInterval = setInterval(() => {
     if (tiles.length === 0) {
       clearInterval(revealInterval);
       return;
     }
+
     const r = Math.floor(Math.random() * tiles.length);
     const tile = tiles.splice(r, 1)[0];
-    tile.style.background = `url(${q.img})`;
-    tile.style.backgroundSize = "cover";
-    tile.style.backgroundPosition = "center";
+
+    // reveal tile by opacity, NOT background reset
+    tile.style.opacity = 1;
   }, revealSpeed);
+
+  // --- ANSWERS ---
+  const ans = document.getElementById("answers");
+  ans.innerHTML = "";
+
+  q.answers.forEach((a, i) => {
+    const b = document.createElement("button");
+    b.textContent = a;
+    b.onclick = () => answer(i);
+    ans.appendChild(b);
+  });
+}
+
+
+const revealSpeed = 300;
+
+const revealInterval = setInterval(() => {
+    if (tiles.length === 0) {
+        clearInterval(revealInterval);
+        return;
+    }
+
+    const r = Math.floor(Math.random() * tiles.length);
+    const tile = tiles.splice(r, 1)[0];
+
+    // reveal correct tile
+    tile.style.opacity = "1";
+}, revealSpeed);
+
 
   const ans = document.getElementById("answers");
   ans.innerHTML = "";
