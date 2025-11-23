@@ -56,21 +56,19 @@
 </div>
 
 <script>
-
-// --- QUESTIONS WITH YOUR EXACT FILENAMES ---
 const questions = [
-{ q: "Wie heißt dieses Spiel?", img: "Spiel.jpg", answers: ["Malefiz","Mensch ärgere dich nicht","Rummikub","Megalon"], correct: 0 },
-{ q: "In welcher Jahreszeit ist dieses Bild entstanden?", img: "Weinberg.jpg", answers: ["Frühling","Sommer","Herbst","Winter"], correct: 0 },
-{ q: "Was wird hier gespielt?", img: "Ei.jpg", answers: ["Sackhüpfen","Eierlauf","Wikinger Schach","Boules"], correct: 1 },
-{ q: "Wie viele Hunde sehen wir hier?", img: "Hund.jpg", answers: ["nur Ziegen","5","2","3"], correct: 3 },
-{ q: "In welcher Stadt befinden wir uns hier?", img: "Stadt.jpg", answers: ["Tübingen","Göttingen","Düsseldorf","Heidelberg"], correct: 3 },
-{ q: "Was wird hier gefeiert?", img: "Abschluss.jpg", answers: ["Berufsausbildung","Geburtstag","Schulabschluss","Tanzschulball"], correct: 2 },
-{ q: "An welchem Tag ist dieses Bild entstanden?", img: "Freitag.jpg", answers: ["Samstag","Freitag","Sonntag","Dienstag"], correct: 1 },
-{ q: "Wie heißt dieser Herr?", img: "Papst.jpg", answers: ["Franziskus","Johannes","Linus","Leo"], correct: 3 },
-{ q: "In welchem Land wurde dieses Bild aufgenommen?", img: "Land.jpg", answers: ["Portugal","Türkei","Spanien","Frankreich"], correct: 2 },
-{ q: "Welchen Vogel sehen wir hier?", img: "Vogel.jpg", answers: ["Turmfalke","Wanderfalke","Habicht","Bussard"], correct: 1 },
-{ q: "Welche Sprache wird hier gesprochen?", img: "CostaRica.jpg", answers: ["Spanisch","Portugiesisch","Englisch","Französisch"], correct: 0 },
-{ q: "Wie viele Menschen sehen wir hier?", img: "Family.jpg", answers: ["21","19","22","23"], correct: 2 }
+  { q: "Wie heißt dieses Spiel?", img: "Spiel.jpg", answers: ["Malefiz","Mensch ärgere dich nicht","Rummikub","Megalon"], correct: 0 },
+  { q: "In welcher Jahreszeit ist dieses Bild entstanden?", img: "Weinberg.jpg", answers: ["Frühling","Sommer","Herbst","Winter"], correct: 0 },
+  { q: "Was wird hier gespielt?", img: "Ei.jpg", answers: ["Sackhüpfen","Eierlauf","Wikinger Schach","Boules"], correct: 1 },
+  { q: "Wie viele Hunde sehen wir hier?", img: "Hund.jpg", answers: ["nur Ziegen","5","2","3"], correct: 3 },
+  { q: "In welcher Stadt befinden wir uns hier?", img: "Stadt.jpg", answers: ["Tübingen","Göttingen","Düsseldorf","Heidelberg"], correct: 3 },
+  { q: "Was wird hier gefeiert?", img: "Abschluss.jpg", answers: ["Berufsausbildung","Geburtstag","Schulabschluss","Tanzschulball"], correct: 2 },
+  { q: "An welchem Tag ist dieses Bild entstanden?", img: "Freitag.jpg", answers: ["Samstag","Freitag","Sonntag","Dienstag"], correct: 1 },
+  { q: "Wie heißt dieser Herr?", img: "Papst.jpg", answers: ["Franziskus","Johannes","Linus","Leo"], correct: 3 },
+  { q: "In welchem Land wurde dieses Bild aufgenommen?", img: "Land.jpg", answers: ["Portugal","Türkei","Spanien","Frankreich"], correct: 2 },
+  { q: "Welchen Vogel sehen wir hier?", img: "Vogel.jpg", answers: ["Turmfalke","Wanderfalke","Habicht","Bussard"], correct: 1 },
+  { q: "Welche Sprache wird hier gesprochen?", img: "CostaRica.jpg", answers: ["Spanisch","Portugiesisch","Englisch","Französisch"], correct: 0 },
+  { q: "Wie viele Menschen sehen wir hier?", img: "Family.jpg", answers: ["21","19","22","23"], correct: 2 }
 ];
 
 let current = 0;
@@ -94,43 +92,43 @@ function loadQuestion() {
   const area = document.getElementById("imageArea");
   area.innerHTML = "";
 
-  // --- BUILD PUZZLE GRID ---
   const grid = document.createElement("div");
   grid.className = "grid";
   area.appendChild(grid);
 
   const tiles = [];
   const gridSize = 6;
-  
+
+  // --- GRID BUILD ---
   for (let row = 0; row < gridSize; row++) {
     for (let col = 0; col < gridSize; col++) {
       const t = document.createElement("div");
       t.className = "tile";
       t.style.backgroundImage = `url(${q.img})`;
       t.style.backgroundPosition = `${(col/(gridSize-1))*100}% ${(row/(gridSize-1))*100}%`;
+      t.style.opacity = 0;
       tiles.push(t);
       grid.appendChild(t);
     }
   }
 
-// --- REVEAL EFFECT (RANDOM) ---
-let remainingTiles = [...tiles];
-const revealSpeed = 300; // Millisekunden zwischen Kacheln (langsamer)
-const revealInterval = setInterval(() => {
-  if (remainingTiles.length === 0) {
-    clearInterval(revealInterval);
-    return;
-  }
-  const r = Math.floor(Math.random() * remainingTiles.length);
-  const tile = remainingTiles.splice(r, 1)[0];
-  tile.style.opacity = 1; // sichtbar
-}, revealSpeed);
+  // --- RANDOM REVEAL ---
+  const remainingTiles = [...tiles];
+  const revealSpeed = 400; // langsamer
+  const revealInterval = setInterval(() => {
+    if (remainingTiles.length === 0) {
+      clearInterval(revealInterval);
+      return;
+    }
+    const r = Math.floor(Math.random() * remainingTiles.length);
+    const tile = remainingTiles.splice(r, 1)[0];
+    tile.style.opacity = 1;
+  }, revealSpeed);
 
-  // --- ANSWERS ---
+  // --- ANSWER BUTTONS ---
   const ans = document.getElementById("answers");
   ans.innerHTML = "";
-
-  q.answers.forEach((a, i) => {
+  q.answers.forEach((a,i) => {
     const b = document.createElement("button");
     b.textContent = a;
     b.onclick = () => answer(i);
@@ -142,7 +140,7 @@ function answer(i) {
   if (i === questions[current].correct) correctCount++;
   current++;
 
-  // Pause nach jeder Frage
+  // kleine Pause nach jeder Frage
   setTimeout(() => {
     if (current >= questions.length) finish();
     else loadQuestion();
@@ -157,10 +155,9 @@ function finish() {
   document.getElementById("score").textContent = `Richtige Antworten: ${correctCount}`;
   document.getElementById("time").textContent = `Zeit: ${time} Sekunden`;
 
-  // LEADERBOARD
+  // --- LEADERBOARD ---
   let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
   leaderboard.push({ name: player, score: correctCount, time: time });
-
   leaderboard.sort((a,b) => b.score - a.score || a.time - b.time);
   localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
 
@@ -176,9 +173,9 @@ function finish() {
   });
   table.appendChild(header);
 
-  leaderboard.forEach((entry, index) => {
+  leaderboard.forEach((entry,index) => {
     const tr = document.createElement("tr");
-    [index + 1, entry.name, entry.score, entry.time].forEach(text => {
+    [index+1, entry.name, entry.score, entry.time].forEach(text => {
       const td = document.createElement("td");
       td.textContent = text;
       tr.appendChild(td);
@@ -188,7 +185,6 @@ function finish() {
 
   lbDiv.appendChild(table);
 }
-
 </script>
 </body>
 </html>
