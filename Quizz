@@ -82,16 +82,27 @@ function loadQuestion() {
   grid.className = "grid";
 
   const totalTiles = 36;
+  const gridSize = 6; // 6x6 grid
   const tiles = [];
 
-  for (let i = 0; i < totalTiles; i++) {
+for (let row = 0; row < gridSize; row++) {
+  for (let col = 0; col < gridSize; col++) {
     const t = document.createElement("div");
     t.className = "tile";
+
+    // set the background image
+    t.style.backgroundImage = `url(${q.img})`;
+
+    // scale the image to the full grid
+    t.style.backgroundSize = `${gridSize * 100}% ${gridSize * 100}%`;
+
+    // show the correct portion in this tile
+    t.style.backgroundPosition = `${(col / (gridSize - 1)) * 100}% ${(row / (gridSize - 1)) * 100}%`;
+
     tiles.push(t);
     grid.appendChild(t);
   }
-
-  area.appendChild(grid);
+}
 
   const revealSpeed = 400; // Millisekunden zwischen Kacheln
   const revealInterval = setInterval(() => {
