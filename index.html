@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Familienquizz</title>
+  <title>Familienquiz</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f2f2f2; }
     #app { max-width: 800px; margin: auto; padding: 20px; }
     .hidden { display: none; }
-
     .grid { 
       display: grid; 
       grid-template-columns: repeat(6, 1fr); 
@@ -16,26 +15,28 @@
       width: 100%; 
       max-width: 600px; 
       margin: 20px auto; 
+      position: relative;
     }
-
-    .tile {
-      width: 100%;
-      padding-top: 100%;
-      transition: opacity 0.3s ease;
-      background-size: cover;
-      background-repeat: no-repeat;
-      opacity: 0; /* hidden initially */
+    .tile { 
+      width: 100%; 
+      padding-top: 100%; 
+      background: #444; 
+      transition: opacity 0.3s ease; 
+      position: relative;
     }
-
+    .tile.revealed {
+      opacity: 0;
+    }
     button { padding: 10px 20px; margin: 5px; font-size: 16px; cursor: pointer; }
     table { width: 100%; border-collapse: collapse; margin-top: 10px; }
     th, td { border: 1px solid #333; padding: 5px; text-align: center; }
     th { background: #ddd; }
   </style>
 </head>
+
 <body>
 <div id="app">
-  <h1>Familienquizz</h1>
+  <h1>Familienquiz</h1>
   
   <div id="startScreen">
     <p>Bitte Namen eingeben:</p>
@@ -45,7 +46,10 @@
 
   <div id="questionScreen" class="hidden">
     <h2 id="questionText"></h2>
-    <div id="imageArea"></div>
+    <div id="imageWrapper" style="position: relative; width:100%; max-width:600px; margin:auto;">
+      <img id="quizImage" src="" style="width:100%; display:block;">
+      <div id="imageArea" class="grid"></div>
+    </div>
     <div id="answers"></div>
   </div>
 
@@ -60,18 +64,18 @@
 
 <script>
 const questions = [
-{ q: "Wie heißt dieses Spiel?", img: "Spiel.jpg", answers: ["Malefiz","Mensch ärgere dich nicht","Rummikub","Megalon"], correct: 0 },
-{ q: "In welcher Jahreszeit ist dieses Bild aufgenommen worden?", img: "Weinberg.jpg", answers: ["Frühling","Sommer","Herbst","Winter"], correct: 0 },
-{ q: "Was wird hier gespielt?", img: "Spiel.jpg", answers: ["Sackhüpfen","Eierlauf","Wikinger Schach","Boules"], correct: 1 },
-{ q: "Wie viele Hunde sehen wir hier?", img: "Hund.jpg", answers: ["nur Ziegen","5","2","3"], correct: 3 },
-{ q: "In welcher Stadt befinden wir uns hier?", img: "Stadt.jpg", answers: ["Tübingen","Göttingen","Düsseldorf","Heidelberg"], correct: 3 },
-{ q: "Was wird hier gefeiert?", img: "Abschluss.jpg", answers: ["Berufsausbildung","Geburtstag","Schulabschluss","Tanzschulball"], correct: 2 },
-{ q: "An welchem Tag ist dieses Bild entstanden?", img: "Freitag.jpg", answers: ["Samstag","Freitag","Sonntag","Dienstag"], correct: 1 },
-{ q: "Wie heißt dieser Herr?", img: "Papst.jpg", answers: ["Franziskus","Johannes","Linus","Leo"], correct: 3 },
-{ q: "In welchem Land wurde dieses Bild aufgenommen?", img: "Land.jpg", answers: ["Portugal","Türkei","Spanien","Frankreich"], correct: 2 },
-{ q: "Welchen Vogel sehen wir hier?", img: "Vogel.jpg", answers: ["Turmfalke","Wanderfalke","Habicht","Bussard"], correct: 1 },
-{ q: "Welche Sprache wird hier gesprochen?", img: "CostaRica.jpg", answers: ["Spanisch","Portugiesisch","Englisch","Französisch"], correct: 0 },
-{ q: "Wie viele Menschen sehen wir hier?", img: "Family.jpg", answers: ["21","19","22","23"], correct: 2 }
+  { q: "Wie heißt dieses Spiel?", img: "Spiel.jpg", answers: ["Malefiz","Mensch ärgere dich nicht","Rummikub","Megalon"], correct: 0 },
+  { q: "In welcher Jahreszeit ist dieses Bild aufgenommen worden?", img: "Weinberg.jpg", answers: ["Frühling","Sommer","Herbst","Winter"], correct: 0 },
+  { q: "Was wird hier gespielt?", img: "Spiel.jpg", answers: ["Sackhüpfen","Eierlauf","Wikinger Schach","Boules"], correct: 1 },
+  { q: "Wie viele Hunde sehen wir hier?", img: "Hund.jpg", answers: ["nur Ziegen","5","2","3"], correct: 3 },
+  { q: "In welcher Stadt befinden wir uns hier?", img: "Stadt.jpg", answers: ["Tübingen","Göttingen","Düsseldorf","Heidelberg"], correct: 3 },
+  { q: "Was wird hier gefeiert?", img: "Abschluss.jpg", answers: ["Berufsausbildung","Geburtstag","Schulabschluss","Tanzschulball"], correct: 2 },
+  { q: "An welchem Tag ist dieses Bild entstanden?", img: "Freitag.jpg", answers: ["Samstag","Freitag","Sonntag","Dienstag"], correct: 1 },
+  { q: "Wie heißt dieser Herr?", img: "Papst.jpg", answers: ["Franziskus","Johannes","Linus","Leo"], correct: 3 },
+  { q: "In welchem Land wurde dieses Bild aufgenommen?", img: "Land.jpg", answers: ["Portugal","Türkei","Spanien","Frankreich"], correct: 2 },
+  { q: "Welchen Vogel sehen wir hier?", img: "Vogel.jpg", answers: ["Turmfalke","Wanderfalke","Habicht","Bussard"], correct: 1 },
+  { q: "Welche Sprache wird hier gesprochen?", img: "CostaRica.jpg", answers: ["Spanisch","Portugiesisch","Englisch","Französisch"], correct: 0 },
+  { q : "Wie viele Menschen sehen wir hier?", img: "Family.jpg", answers: ["21","19","22","23"], correct: 2 }
 ];
 
 let current = 0;
@@ -89,44 +93,37 @@ function startGame() {
 
 function loadQuestion() {
   document.getElementById("questionScreen").classList.remove("hidden");
+
   const q = questions[current];
   document.getElementById("questionText").textContent = q.q;
 
+  // show actual image
+  const img = document.getElementById("quizImage");
+  img.src = q.img;
+
+  // create dark tiles
   const area = document.getElementById("imageArea");
   area.innerHTML = "";
 
-  const gridSize = 6;
   const tiles = [];
+  const total = 36;
 
-  const grid = document.createElement("div");
-  grid.className = "grid";
-  area.appendChild(grid);
-
-  // Create 6x6 tiles
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
-      const t = document.createElement("div");
-      t.className = "tile";
-
-      t.style.backgroundImage = `url(${q.img})`;
-      t.style.backgroundSize = `${gridSize * 100}% ${gridSize * 100}%`;
-      t.style.backgroundPosition = `${(col / (gridSize - 1)) * 100}% ${(row / (gridSize - 1)) * 100}%`;
-
-      t.style.opacity = "0";
-      grid.appendChild(t);
-      tiles.push(t);
-    }
+  for (let i = 0; i < total; i++) {
+    const t = document.createElement("div");
+    t.className = "tile";
+    area.appendChild(t);
+    tiles.push(t);
   }
 
-  // Reveal tiles slowly
-  const revealInterval = setInterval(() => {
+  // reveal tiles one by one
+  let interval = setInterval(() => {
     if (tiles.length === 0) {
-      clearInterval(revealInterval);
+      clearInterval(interval);
       return;
     }
     const r = Math.floor(Math.random() * tiles.length);
     const tile = tiles.splice(r, 1)[0];
-    tile.style.opacity = "1";
+    tile.classList.add("revealed");
   }, 300);
 
   // answers
@@ -155,14 +152,12 @@ function finish() {
   document.getElementById("score").textContent = `Richtige Antworten: ${correctCount}`;
   document.getElementById("time").textContent = `Zeit: ${time} Sekunden`;
 
-  // save leaderboard
   let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
   leaderboard.push({ name: player, score: correctCount, time: time });
 
   leaderboard.sort((a,b) => b.score - a.score || a.time - b.time);
   localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
 
-  // build table
   const lbDiv = document.getElementById("leaderboard");
   lbDiv.innerHTML = "";
 
@@ -190,6 +185,7 @@ function finish() {
 </script>
 </body>
 </html>
+
 
   lbDiv.appendChild(table);
 }
