@@ -113,16 +113,18 @@ function loadQuestion() {
     }
   }
 
-  // --- REVEAL EFFECT ---
-  let index = 0;
-  const revealInterval = setInterval(() => {
-    if (index >= tiles.length) {
-      clearInterval(revealInterval);
-      return;
-    }
-    tiles[index].style.opacity = 1;
-    index++;
-  }, 180);   // langsamere Enthüllung
+// --- REVEAL EFFECT (RANDOM) ---
+let remainingTiles = [...tiles];
+const revealSpeed = 300; // Millisekunden zwischen Kacheln (langsamer)
+const revealInterval = setInterval(() => {
+  if (remainingTiles.length === 0) {
+    clearInterval(revealInterval);
+    return;
+  }
+  const r = Math.floor(Math.random() * remainingTiles.length);
+  const tile = remainingTiles.splice(r, 1)[0];
+  tile.style.opacity = 1; // sichtbar
+}, revealSpeed);
 
   // --- ANSWERS ---
   const ans = document.getElementById("answers");
